@@ -5,6 +5,7 @@ import "./App.css";
 
 function App() {
   const [tarefas, setTarefas] = useState([]);
+  const [tarefaParaEditar, setTarefaParaEditar] = useState(null);
 
   const adicionarTarefa = (titulo) => {
     const novaTarefa = {
@@ -17,14 +18,49 @@ function App() {
 
   const excluirTarefa = (id) => {
     setTarefas(tarefas.filter((tarefa) => tarefa.id !== id));
+    if (tarefaParaEditar?.id === id) {
+      setTarefaParaEditar(null);
+    }
+  };
+
+  const editarTarefa = (id, novoTitulo) => {
+    setTarefas(
+      tarefas.map((tarefa) =>
+        tarefa.id === id ? { ...tarefa, titulo: novoTitulo } : tarefa
+      )
+    );
+    setTarefaParaEditar(null);
+  };
+
+  const alternarConclusao = (id) => {
+    setTarefas(
+      tarefas.map((tarefa) =>
+        tarefa.id === id ? { ...tarefa, concluida: !tarefa.concluida } : tarefa
+      )
+    );
+  };
+
+  const limparEdicao = () => {
+    setTarefaParaEditar(null);
   };
 
   return (
     <div className="container">
       <h1>Gerenciador de Tarefas</h1>
 
-      <FormularioTarefa aoAdicionar={adicionarTarefa} />
-      <ListaTarefas tarefas={tarefas} aoExcluir={excluirTarefa} />
+      <FormularioTarefa
+        aoAdicionar={adicionarTarefa}
+        tarefaParaEditar={tarefaParaEditar}
+        aoEditar={editarTarefa}
+        limparEdicao={limparEdicao}
+      />
+
+      <ListaTarefas
+        tarefas={tarefas}
+        aoExcluir={excluirTarefa}
+        aoEditar={setTarefaParaEditar}
+        aoAlternarConclusao={alternarConclusao}
+      />
     </div>
   );
 }

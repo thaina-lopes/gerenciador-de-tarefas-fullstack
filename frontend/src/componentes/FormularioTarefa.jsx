@@ -1,12 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-function FormularioTarefa({ aoAdicionar }) {
+function FormularioTarefa({
+  aoAdicionar,
+  tarefaParaEditar,
+  aoEditar,
+  limparEdicao,
+}) {
   const [titulo, setTitulo] = useState("");
+  const [modoEdicao, setModoEdicao] = useState(false);
+
+  useEffect(() => {
+    if (tarefaParaEditar) {
+      setTitulo(tarefaParaEditar.titulo);
+      setModoEdicao(true);
+    } else {
+      setTitulo("");
+      setModoEdicao(false);
+    }
+  }, [tarefaParaEditar]);
 
   const aoSubmeter = (e) => {
     e.preventDefault();
     if (!titulo.trim()) return;
-    aoAdicionar(titulo);
+
+    if (modoEdicao) {
+      aoEditar(tarefaParaEditar.id, titulo);
+    } else {
+      aoAdicionar(titulo);
+    }
     setTitulo("");
   };
 
@@ -18,7 +39,12 @@ function FormularioTarefa({ aoAdicionar }) {
         value={titulo}
         onChange={(e) => setTitulo(e.target.value)}
       />
-      <button type="submit">Adicionar</button>
+      <button type="submit">{modoEdicao ? "Atualizar" : "Adicionar"}</button>
+      {modoEdicao && (
+        <button type="button" onClick={limparEdicao}>
+          Cancelar
+        </button>
+      )}
     </form>
   );
 }
